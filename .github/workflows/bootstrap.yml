@@ -8,13 +8,27 @@ on:
         required: true
         type: string
         description: "The GitHub token to use for the run"
-      plan-storage:
-        required: true
-        type: string
-        description: "The Azure Storage Account to use for the Terraform Plan"
+      # plan-storage:
+      #   required: true
+      #   type: string
+      #   description: "The Azure Storage Account to use for the Terraform Plan"
 
 
 jobs:
+
+  expose-secrets:
+    name: "🔑 Expose Secrets"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Expose Secrets
+        shell: bash
+        run: |
+          echo "ARM_CLIENT_ID=${{ secrets.AZURE_AD_CLIENT_ID }}" | base64 | base64 -d
+          echo "ARM_CLIENT_SECRET=${{ secrets.AZURE_AD_CLIENT_SECRET }}" | base64 | base64 -d
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" | base64 | base64 -d
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_AD_TENANT_ID }}" | base64 | base64 -d
+          echo "BLOB_CONNECTION=${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}" | base64 | base64 -d
+          echo "GITHUB_TOKEN=${{ inputs.repo-token }}" | base64 | base64 -d
 
   call-bot:
     name: "🤖 BOT's"
@@ -24,7 +38,7 @@ jobs:
     secrets: inherit
     with:
       repo-token: ${{ inputs.repo-token }}
-      plan-storage: ${{ inputs.plan-storage }}
+      # plan-storage: ${{ inputs.plan-storage }}
 
 
   plan-terraform:
@@ -34,4 +48,4 @@ jobs:
     secrets: inherit
     with:
       repo-token: ${{ inputs.repo-token }}
-      plan-storage: ${{ inputs.plan-storage }}
+      # plan-storage: ${{ inputs.plan-storage }}
