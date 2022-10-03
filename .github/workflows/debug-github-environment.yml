@@ -1,16 +1,28 @@
+---
+name: "🐞 Debug Github Context"
 
+on:
+  workflow_call:
+    inputs:
+      repo-token:
+        required: true
+        type: string
+        description: "The GitHub token to use for the run"
 
-
+jobs:
+  
   activity-debug:
     name: "🐞 Debug Context"
     runs-on: ubuntu-latest
     if: contains(github.event.comment.body, '/debug')
     env:
-      GITHUB_TOKEN: ${{ github.token }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      BLOB_CONNECTION: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
+      GITHUB_TOKEN: ${{ inputs.repo-token }}
+
     steps:
 
       - name: Dump GitHub context
@@ -45,7 +57,7 @@
 
       - name: Debug Environment Variables
         uses: hmarr/debug-action@v2
-        
+
       - name: Show default environment variables
         run: |
           echo "The job_id is: $GITHUB_JOB"   # reference the default environment variables
