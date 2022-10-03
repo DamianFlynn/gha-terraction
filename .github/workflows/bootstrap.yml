@@ -8,6 +8,10 @@ on:
         required: true
         type: string
         description: "The GitHub token to use for the run"
+      plan-storage:
+        required: true
+        type: string
+        description: "The Azure Storage Account to use for the Terraform Plan"
 
 
 jobs:
@@ -20,6 +24,8 @@ jobs:
     secrets: inherit
     with:
       repo-token: ${{ inputs.repo-token }}
+      plan-storage: ${{ inputs.plan-storage }}
+
 
   plan-terraform:
     name: "🗓️ Refresh Terraform Plan"
@@ -28,3 +34,4 @@ jobs:
     secrets: inherit
     with:
       repo-token: ${{ inputs.repo-token }}
+      plan-storage: ${{ inputs.plan-storage }}

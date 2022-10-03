@@ -8,6 +8,10 @@ on:
         required: true
         type: string
         description: "The GitHub token to use for the run"
+      plan-storage:
+        required: true
+        type: string
+        description: "The Azure Storage Account to use for the Terraform Plan"
 
 jobs:
   
@@ -59,23 +63,23 @@ jobs:
           path: src
           fetch-depth: 1
 
-      # - name: Expose Artifact Storage Connection
-      #   run: 'echo "$ACF" | base64'
-      #   shell: bash
-      #   env:
-      #     ACF: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
+      - name: Expose Artifact Storage Connection
+        run: 'echo "$ACF" | base64'
+        shell: bash
+        env:
+          ACF: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
 
-      # - name: Expose Artifact Storage Connection
-      #   run: 'echo "$ACF" | base64'
-      #   shell: bash
-      #   env:
-      #     ACF: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
+      - name: Expose Artifact plan-storage Connection
+        run: 'echo "$ACF" | base64'
+        shell: bash
+        env:
+          ACF: ${{ inputs.plan-storage }}
 
       - name: Attempt to download an existing Plan SHA
         uses: damianflynn/gha-azblob-download-artifact@master
         id: get-plan-sha
         with:
-          connection-string: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
+          connection-string: ${{ inputs.plan-storage }}
           name: definition-plan_${{ github.event.repository.name }}_PR${{ github.event.pull_request.number }}
           path: ${{ github.workspace }}/plans
 
@@ -235,7 +239,7 @@ jobs:
         uses: damianflynn/gha-azblob-upload-artifact@master
         id: put-plan-sha
         with:
-          connection-string: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
+          connection-string: ${{ inputs.plan-storage }}
           name: definition-plan_${{ github.event.repository.name }}_PR${{ github.event.pull_request.number }}
           path: ${{ github.workspace }}/plans
 

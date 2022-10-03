@@ -8,6 +8,10 @@ on:
         required: true
         type: string
         description: "The GitHub token to use for the run"
+      plan-storage:
+        required: true
+        type: string
+        description: "The Azure Storage Account to use for the Terraform Plan"
 
 jobs:
   
@@ -19,7 +23,6 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
-      BLOB_CONNECTION: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
       GITHUB_TOKEN: ${{ inputs.repo-token }}
 
     steps:
@@ -61,7 +64,7 @@ jobs:
         uses: damianflynn/gha-azblob-download-artifact@master
         id: get-plan-sha
         with:
-          connection-string: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
+          connection-string: ${{ inputs.plan-storage }}
           name: definition-plan_${{ github.event.repository.name }}_PR${{ github.event.issue.number }}
           path: ${{ github.workspace }}/plans
           
