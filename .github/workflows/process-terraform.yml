@@ -1,0 +1,28 @@
+---
+name: "🧳 Build Main Definition"
+
+on:
+  workflow_call:
+    inputs:
+      repo-token:
+        required: true
+        type: string
+        description: "The GitHub token to use for the run"
+
+
+jobs:
+
+  call-bot:
+    name: "🤖 BOT's"
+    if: ${{ github.event_name == 'issue_comment' }}
+    # if: ${{ github.event.issue.pull_request && contains(github.event.comment.html_url, '/pull/')  }}
+    uses: ./.github/workflows/terraform-bot.yml
+    secrets: inherit
+
+  plan-terraform:
+    name: "🗓️ Refresh Terraform Plan"
+    if: ${{ github.event_name == 'pull_request' }} # TODO: Add file for **/*.tf and **/*.tfvars
+    uses: ./.github/workflows/terraform-plan.yml
+    secrets: inherit
+    with:
+      repo-token: ${{ inputs.repo-token }}
