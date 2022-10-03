@@ -1,0 +1,36 @@
+---
+name: "👮 Security Scan Terraform Plan"
+
+on:
+  workflow_call:
+    inputs:
+      repo-token:
+        required: true
+        type: string
+        description: "The GitHub token to use for the run"
+
+jobs:
+  
+  terraform-scan:
+    runs-on: ubuntu-latest
+    name: "Security Scan Main Terraform Plan"
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      BLOB_CONNECTION: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
+      GITHUB_TOKEN: ${{ inputs.repo-token }}
+
+    steps:
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-sarif-action@v0.1.0
+        with:
+          sarif_file: tfsec.sarif          
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: tfsec.sarif  

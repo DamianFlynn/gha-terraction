@@ -16,8 +16,10 @@ jobs:
     name: "🤖 BOT's"
     if: ${{ github.event_name == 'issue_comment' }}
     # if: ${{ github.event.issue.pull_request && contains(github.event.comment.html_url, '/pull/')  }}
-    uses: ./.github/workflows/terraform-bot.yml
+    uses: ./.github/workflows/terraform-bots.yml
     secrets: inherit
+    with:
+      repo-token: ${{ inputs.repo-token }}
 
   plan-terraform:
     name: "🗓️ Refresh Terraform Plan"

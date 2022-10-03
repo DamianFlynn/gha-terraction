@@ -3,34 +3,58 @@ name: '🧳 BOT Activities'
 
 on:
   workflow_call:
-  #   inputs:
-  #     build_id:
-  #       required: true
-  #       type: number
-  #  ${{ inputs.build_id }}
+    inputs:
+      repo-token:
+        required: true
+        type: string
+        description: "The GitHub token to use for the run"
+
 
 jobs:
 
-  # activities:
-  #   name: BOT Greeting
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     GITHUB_TOKEN: ${{ github.token }}
+  bot-debug:
+    name: "🤖 Debugging BOT"
+    if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/debug') }}
+    uses: ./.github/workflows/debug-github-environment.yml
+    secrets: inherit
+    with:
+      GITHUB_TOKEN: ${{ repo-token }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }} 
 
-  #   steps:
-  #     - name: Support information 
-  #       if: contains(github.event.comment.body, '/support')   # check the comment if it contains the keywords
-  #       run: |
-  #         echo "Debug Support - Context Information"
-  #         echo "$GITHUB_CONTEXT" 
+
+  bot-terraform-apply:
+    name: "🏗️ Deploy Request"
+    if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/deploy') }}
+    uses: ./.github/workflows/terraform-bot-apply.yml
+    secrets: inherit
+    with:
+      GITHUB_TOKEN: ${{ repo-token }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }} 
 
 
+  bot-terraform-scan:
+    name: "👮 Security Review Request"
+    if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/scan') }}
+    uses: ./.github/workflows/terraform-bot-security.yml
+    secrets: inherit
+    with:
+      GITHUB_TOKEN: ${{ repo-token }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }} 
 
 
   terraform-deploy:
     name: "🏗️ Deploy Request"
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '/deploy')
+    if: contains(github.event.comment.body, '/olddeploy')
     env:
       GITHUB_TOKEN: ${{ github.token }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
@@ -251,13 +275,11 @@ jobs:
           echo "Terraform Apply Failed"
           exit 1
 
-
-
-
+     
   activity-debug:
     name: "🐞 Debug Context"
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '/debug')
+    if: contains(github.event.comment.body, '/olddebug')
     env:
       GITHUB_TOKEN: ${{ github.token }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
@@ -309,7 +331,7 @@ jobs:
   activity-tfsec:
     name: Scan Request
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '/scan')
+    if: contains(github.event.comment.body, '/oldscan')
     env:
       GITHUB_TOKEN: ${{ github.token }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
@@ -328,3 +350,4 @@ jobs:
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: tfsec.sarif  
+
