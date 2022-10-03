@@ -8,10 +8,10 @@ on:
         required: true
         type: string
         description: "The GitHub token to use for the run"
-      plan-storage:
-        required: true
-        type: string
-        description: "The Azure Storage Account to use for the Terraform Plan"
+      # plan-storage:
+      #   required: true
+      #   type: string
+      #   description: "The Azure Storage Account to use for the Terraform Plan"
 
 jobs:
   
