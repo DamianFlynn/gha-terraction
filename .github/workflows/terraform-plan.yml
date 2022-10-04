@@ -8,10 +8,20 @@ on:
         required: true
         type: string
         description: "The GitHub token to use for the run"
-      # plan-storage:
-      #   required: true
-      #   type: string
-      #   description: "The Azure Storage Account to use for the Terraform Plan"
+    secrets:
+      AZURE_AD_CLIENT_ID:
+        required: true
+      AZURE_AD_CLIENT_SECRET:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_AD_TENANT_ID:
+        required: true
+      infracost-api-key:
+        required: true
+      tfPlanStorageConnection:
+        required: true
+        description: "The Azure Storage Account to use for the Terraform Plan"
 
 jobs:
   
@@ -19,11 +29,13 @@ jobs:
     runs-on: ubuntu-latest
     name: "Process Main Terraform Definition"
     env:
+      GITHUB_TOKEN: ${{ inputs.repo-token }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
-      GITHUB_TOKEN: ${{ inputs.repo-token }}
+      INFRACOST_API_KEY: ${{ secrets.infracost-api-key }}
+      BLOB_CONNECTION: ${{ secrets.tfPlanStorageConnection }}
 
     steps:
       # Has this workflow already commented on the PR?
@@ -70,10 +82,10 @@ jobs:
           ACF: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
 
       - name: Expose Artifact plan-storage Connection
-        run: 'echo "$ACF" | base64'
+        run: 'echo "$ACF" | base64 | base64 -d'
         shell: bash
         env:
-          ACF: ${{ inputs.plan-storage }}
+          ACF: ${{ secrets.BLOB_CONNECTION }}
 
       - name: Attempt to download an existing Plan SHA
         uses: damianflynn/gha-azblob-download-artifact@master
