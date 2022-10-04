@@ -34,7 +34,6 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
-      BLOB_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
 
     steps:
       # Has this workflow already commented on the PR?
@@ -74,23 +73,23 @@ jobs:
           path: src
           fetch-depth: 1
 
-      - name: Expose Artifact Storage Connection
-        run: 'echo "$ACF" | base64'
-        shell: bash
-        env:
-          ACF: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
+      # - name: Expose Artifact Storage Connection
+      #   run: 'echo "$ACF" | base64'
+      #   shell: bash
+      #   env:
+      #     ACF: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
 
-      - name: Expose Artifact plan-storage Connection
-        run: 'echo "$ACF" | base64 | base64 -d'
-        shell: bash
-        env:
-          ACF: ${{ secrets.BLOB_CONNECTION }}
+      # - name: Expose Artifact plan-storage Connection
+      #   run: 'echo "$ACF" | base64 | base64 -d'
+      #   shell: bash
+      #   env:
+      #     ACF: ${{ secrets.BLOB_CONNECTION }}
 
       - name: Attempt to download an existing Plan SHA
         uses: damianflynn/gha-azblob-download-artifact@master
         id: get-plan-sha
         with:
-          connection-string: ${{ secrets.BLOB_CONNECTION }}
+          connection-string: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
           name: definition-plan_${{ github.event.repository.name }}_PR${{ github.event.pull_request.number }}
           path: ${{ github.workspace }}/plans
 
@@ -249,7 +248,7 @@ jobs:
         uses: damianflynn/gha-azblob-upload-artifact@master
         id: put-plan-sha
         with:
-          connection-string: ${{ secrets.BLOB_CONNECTION }}
+          connection-string: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
           name: definition-plan_${{ github.event.repository.name }}_PR${{ github.event.pull_request.number }}
           path: ${{ github.workspace }}/plans
 

@@ -35,7 +35,6 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
-      BLOB_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
 
     steps:
       - name: Dump GitHub context
