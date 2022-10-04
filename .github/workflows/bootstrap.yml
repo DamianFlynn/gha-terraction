@@ -46,17 +46,27 @@ jobs:
     if: ${{ github.event_name == 'issue_comment' }}
     # if: ${{ github.event.issue.pull_request && contains(github.event.comment.html_url, '/pull/')  }}
     uses: ./.github/workflows/terraform-bots.yml
-    secrets: inherit
+    secrets:
+      AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID}}
+      AZURE_AD_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
     with:
-      repo-token: ${{ inputs.repo-token }}
-      # plan-storage: ${{ inputs.plan-storage }}
+      repo-token: ${{ github.token }}
 
 
   plan-terraform:
     name: "🗓️ Refresh Terraform Plan"
     if: ${{ github.event_name == 'pull_request' }} # TODO: Add file for **/*.tf and **/*.tfvars
     uses: ./.github/workflows/terraform-plan.yml
-    secrets: inherit
+    secrets:
+      AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID}}
+      AZURE_AD_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
     with:
-      repo-token: ${{ inputs.repo-token }}
-      # plan-storage: ${{ inputs.plan-storage }}
+      repo-token: ${{ github.token }}

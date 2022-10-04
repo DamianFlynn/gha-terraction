@@ -8,6 +8,18 @@ on:
         required: true
         type: string
         description: "The GitHub token to use for the run"
+    secrets:
+      AZURE_AD_CLIENT_ID:
+        required: true
+      AZURE_AD_CLIENT_SECRET:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_AD_TENANT_ID:
+        required: true
+      TERRAFORM_PLAN_STORAGE_CONNECTION:
+        required: true
+        description: "The Azure Storage Account to use for the Terraform Plan"
 
 jobs:
   
@@ -15,12 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     name: "Security Scan Main Terraform Plan"
     env:
+      GITHUB_TOKEN: ${{ inputs.repo-token }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
-      BLOB_CONNECTION: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
-      GITHUB_TOKEN: ${{ inputs.repo-token }}
+      BLOB_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
 
     steps:
 

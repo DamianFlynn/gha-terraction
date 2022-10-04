@@ -17,9 +17,9 @@ on:
         required: true
       AZURE_AD_TENANT_ID:
         required: true
-      infracost-api-key:
+      INFRACOST_API_KEY:
         required: true
-      tfPlanStorageConnection:
+      TERRAFORM_PLAN_STORAGE_CONNECTION:
         required: true
         description: "The Azure Storage Account to use for the Terraform Plan"
 
@@ -34,8 +34,8 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
-      INFRACOST_API_KEY: ${{ secrets.infracost-api-key }}
-      BLOB_CONNECTION: ${{ secrets.tfPlanStorageConnection }}
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+      BLOB_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
 
     steps:
       # Has this workflow already commented on the PR?
@@ -79,7 +79,7 @@ jobs:
         run: 'echo "$ACF" | base64'
         shell: bash
         env:
-          ACF: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
+          ACF: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
 
       - name: Expose Artifact plan-storage Connection
         run: 'echo "$ACF" | base64 | base64 -d'
@@ -91,7 +91,7 @@ jobs:
         uses: damianflynn/gha-azblob-download-artifact@master
         id: get-plan-sha
         with:
-          connection-string: ${{ inputs.plan-storage }}
+          connection-string: ${{ secrets.BLOB_CONNECTION }}
           name: definition-plan_${{ github.event.repository.name }}_PR${{ github.event.pull_request.number }}
           path: ${{ github.workspace }}/plans
 
@@ -251,7 +251,7 @@ jobs:
         uses: damianflynn/gha-azblob-upload-artifact@master
         id: put-plan-sha
         with:
-          connection-string: ${{ inputs.plan-storage }}
+          connection-string: ${{ secrets.BLOB_CONNECTION }}
           name: definition-plan_${{ github.event.repository.name }}_PR${{ github.event.pull_request.number }}
           path: ${{ github.workspace }}/plans
 

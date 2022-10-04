@@ -8,6 +8,20 @@ on:
         required: true
         type: string
         description: "The GitHub token to use for the run"
+    secrets:
+      AZURE_AD_CLIENT_ID:
+        required: true
+      AZURE_AD_CLIENT_SECRET:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_AD_TENANT_ID:
+        required: true
+      INFRACOST_API_KEY:
+        required: true
+      TERRAFORM_PLAN_STORAGE_CONNECTION:
+        required: true
+        description: "The Azure Storage Account to use for the Terraform Plan"
 
 
 jobs:
@@ -16,27 +30,43 @@ jobs:
     name: "🤖 Debugging BOT"
     if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/debug') }}
     uses: ./.github/workflows/debug-github-environment.yml
-    secrets: inherit
+    secrets:
+      AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID}}
+      AZURE_AD_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
     with:
-      repo-token: ${{ inputs.repo-token }}
+      repo-token: ${{ github.token }}
 
 
   bot-terraform-apply:
     name: "🏗️ Deploy Request"
     if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/deploy') }}
     uses: ./.github/workflows/terraform-bot-apply.yml
-    secrets: inherit
+    secrets:
+      AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID}}
+      AZURE_AD_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
     with:
-      repo-token: ${{ inputs.repo-token }}
+      repo-token: ${{ github.token }}
 
 
   bot-terraform-scan:
     name: "👮 Security Review Request"
     if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/scan') }}
     uses: ./.github/workflows/terraform-bot-security.yml
-    secrets: inherit
+    secrets:
+      AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID}}
+      AZURE_AD_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
     with:
-      repo-token: ${{ inputs.repo-token }}
+      repo-token: ${{ github.token }}
 
 
 
