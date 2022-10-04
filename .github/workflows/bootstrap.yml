@@ -17,9 +17,9 @@ on:
         required: true
       AZURE_AD_TENANT_ID:
         required: true
-      infracost-api-key:
+      INFRACOST_API_KEY:
         required: true
-      tfPlanStorageConnection:
+      TERRAFORM_PLAN_STORAGE_CONNECTION:
         required: true
         description: "The Azure Storage Account to use for the Terraform Plan"
 
@@ -37,8 +37,8 @@ jobs:
           echo '"ARM_CLIENT_SECRET=${{ secrets.AZURE_AD_CLIENT_SECRET }}" | base64 | base64 -d'
           echo '"ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" | base64 | base64 -d'
           echo '"ARM_TENANT_ID=${{ secrets.AZURE_AD_TENANT_ID }}" | base64 | base64 -d'
-          echo '"BLOB_CONNECTION=${{ secrets.tfplanStorageConnection }}" | base64 | base64 -d'
-          echo '"INFRACOST_API_KEY=${{ secrets.infracost-api-key }}" | base64 | base64 -d'
+          echo '"BLOB_CONNECTION=${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}" | base64 | base64 -d'
+          echo '"INFRACOST_API_KEY=${{ secrets.INFRACOST_API_KEY }}" | base64 | base64 -d'
           echo '"GITHUB_TOKEN=${{ inputs.repo-token }}" | base64 | base64 -d'
 
   call-bot:
