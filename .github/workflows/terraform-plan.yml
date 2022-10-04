@@ -73,18 +73,6 @@ jobs:
           path: src
           fetch-depth: 1
 
-      # - name: Expose Artifact Storage Connection
-      #   run: 'echo "$ACF" | base64'
-      #   shell: bash
-      #   env:
-      #     ACF: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
-
-      # - name: Expose Artifact plan-storage Connection
-      #   run: 'echo "$ACF" | base64 | base64 -d'
-      #   shell: bash
-      #   env:
-      #     ACF: ${{ secrets.BLOB_CONNECTION }}
-
       - name: Attempt to download an existing Plan SHA
         uses: damianflynn/gha-azblob-download-artifact@master
         id: get-plan-sha
