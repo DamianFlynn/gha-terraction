@@ -1,6 +1,7 @@
 ---
 name: "🗓️ Establish Terraform Plan"
 
+# Workflow Dispatch when a new push is made to the branch, as part of a Pull Request
 on:
   workflow_call:
     inputs:

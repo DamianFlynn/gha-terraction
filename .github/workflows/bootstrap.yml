@@ -1,6 +1,7 @@
 ---
 name: "🧳 Build Main Definition"
 
+# Await for a call from a workflow. On receipt of a call, we need some secrets
 on:
   workflow_call:
     inputs:
@@ -25,6 +26,7 @@ on:
 
 jobs:
 
+  # Listens to the events fired by GitHub associated with 'issue_comment'
   call-bot:
     name: "🤖 BOT's"
     if: ${{ github.event_name == 'issue_comment' }}
@@ -40,6 +42,7 @@ jobs:
     with:
       repo-token: ${{ github.token }}
 
+  # Listens to the events fired by GitHub associated with 'pull_request'
   plan-terraform:
     name: "🗓️ Refresh Terraform Plan"
     if: ${{ github.event_name == 'pull_request' }} # TODO: Add file for **/*.tf and **/*.tfvars
