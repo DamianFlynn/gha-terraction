@@ -1,5 +1,5 @@
 ---
-name: '🧳 BOT Activities'
+name: "🧳 BOT Activities"
 
 on:
   workflow_call:
@@ -23,9 +23,7 @@ on:
         required: true
         description: "The Azure Storage Account to use for the Terraform Plan"
 
-
 jobs:
-
   bot-debug:
     name: "🤖 Debugging BOT"
     if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/debug') }}
@@ -40,7 +38,6 @@ jobs:
     with:
       repo-token: ${{ github.token }}
 
-
   bot-terraform-apply:
     name: "🏗️ Deploy Request"
     if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/deploy') }}
@@ -54,7 +51,6 @@ jobs:
     with:
       repo-token: ${{ github.token }}
 
-
   bot-terraform-scan:
     name: "👮 Security Review Request"
     if: ${{ github.event_name == 'issue_comment' && contains(github.event.comment.body, '/scan') }}
@@ -67,8 +63,6 @@ jobs:
       TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
     with:
       repo-token: ${{ github.token }}
-
-
 
   # terraform-deploy:
   #   name: "🏗️ Deploy Request"
@@ -94,7 +88,6 @@ jobs:
   #         comment-author: 'github-actions[bot]'
   #         body-includes: Applying Plan
 
-
   #     - name: Comment on PR Configuration Planning ${{ matrix.directory }}
   #       if: steps.initial-comment.outputs.comment-id == ''
   #       id: build-example-comment
@@ -103,7 +96,6 @@ jobs:
   #         issue-number: ${{ github.event.issue.number }}
   #         body: |
   #           # 🚀 Applying Plan
-
 
   #     # Initial Workflow Comment Reference for Updates
   #     - name: Find Comment
@@ -115,7 +107,6 @@ jobs:
   #         comment-author: 'github-actions[bot]'
   #         body-includes: Applying Plan
 
-
   #     - name: Attempt to download an existing Plan SHA
   #       uses: damianflynn/gha-azblob-download-artifact@master
   #       id: get-plan-sha
@@ -123,7 +114,6 @@ jobs:
   #         connection-string: ${{ secrets.ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION }}
   #         name: definition-plan_${{ github.event.repository.name }}_PR${{ github.event.issue.number }}
   #         path: ${{ github.workspace }}/plans
-          
 
   #     - name: If we have an exisiting Plan get its SHA
   #       id: store-plan-sha
@@ -134,14 +124,12 @@ jobs:
   #         echo "Found: $lastPlanSHA"
   #         echo "::set-output name=lastPlanSHA::$lastPlanSHA"
 
-
   #     # Grab the Current Terraform Binaries
   #     - name: Setup Terraform
   #       if: steps.changes-since-plan.outputs.definition == ''
   #       uses: hashicorp/setup-terraform@v2
   #       with:
   #         terraform_version: 1.2.3
-
 
   #     # Clone the repo to the 'src' folder
   #     - name: Clone repository for analysis
@@ -153,10 +141,9 @@ jobs:
 
   #     # Lock Files https://stackoverflow.com/a/70930940/19578580
   #     - name: Restore the Terraform Lockfile from plan
-  #       if: steps.changes-since-plan.outputs.definition == '' 
+  #       if: steps.changes-since-plan.outputs.definition == ''
   #       run: |
   #         cp plans/terraform.lock.hcl src/.terraform.lock.hcl
-
 
   #     - name: Update comment with Preping
   #       if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success'
@@ -169,11 +156,9 @@ jobs:
   #           - Initializing deployment tool chain.
   #           - Plan Id: ${{ steps.store-plan-sha.outputs.lastPlanSHA }}
 
-
-  #     ## 
+  #     ##
   #     ## STAGE 1 - Terraform Init
   #     ##
-
 
   #     # Initialize requirements for Terraform
   #     # https://www.terraform.io/cli/config/environment-variables#tf_cli_args-and-tf_cli_args_name
@@ -187,8 +172,6 @@ jobs:
   #       # terraform init -reconfigure
   #       # env:
   #       #   TF_CLI_ARGS: '-var-file="env/dev.tfvars" -backend-config="bucket=${{ secrets.STATE_BUCKET }}" -backend-config="prefix=dev"'
-
-
 
   #     # Sed is removing all the ANSI Color code messages from the error.
   #     - name: Reformat Failed Init
@@ -204,9 +187,8 @@ jobs:
   #         body="$(cat init.txt)"
   #         body="${body//'%'/'%25'}"
   #         body="${body//$'\n'/'%0A'}"
-  #         body="${body//$'\r'/'%0D'}" 
+  #         body="${body//$'\r'/'%0D'}"
   #         echo "::set-output name=body::$body"
-
 
   #     - name: Update comment with Init Failure
   #       if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
@@ -219,7 +201,7 @@ jobs:
   #           Commit Id: ${{github.event.pull_request.head.sha}}
 
   #           ## Terraform Init Failed
-            
+
   #           ```
   #           ${{ steps.init.outputs.stdout }}
   #           ```
@@ -231,18 +213,15 @@ jobs:
   #         reactions: -1
   #         edit-mode: replace
 
-
   #     - name: Fail workflow due to init
   #       if: steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
   #       run: |
   #         echo "Terraform Init Failed"
   #         exit 1
 
-
-  #     ## 
+  #     ##
   #     ## STAGE 2 - Terraform Plan
   #     ##
-
 
   #     # Execute and Terraform Apply
   #     # and update the PR with the findings
@@ -257,7 +236,6 @@ jobs:
   #           -no-color \
   #           ${{ github.workspace }}/plans/tfplan
 
-
   #     - name: Update comment with Apply
   #       if: steps.fc.outputs.comment-id != '' &&  steps.apply.outcome == 'success'
   #       uses: peter-evans/create-or-update-comment@v1
@@ -265,7 +243,7 @@ jobs:
   #         comment-id: ${{ steps.fc.outputs.comment-id }}
   #         body: |
   #           ## Terraform Apply
-            
+
   #           Environment status:
   #           ```
   #           ${{ steps.apply.outputs.stdout }}
@@ -273,14 +251,13 @@ jobs:
 
   #         edit-mode: append
 
-
   #     - name: Update comment with Apply Failure
   #       if: steps.fc.outputs.comment-id != '' &&  steps.apply.outcome == 'failure'
   #       uses: peter-evans/create-or-update-comment@v1
   #       with:
   #         comment-id: ${{ steps.fc.outputs.comment-id }}
   #         body: |
-  #           ## Terraform Apply Failed 
+  #           ## Terraform Apply Failed
 
   #           ```
   #           ${{ steps.apply.outputs.stderr }}
@@ -294,7 +271,6 @@ jobs:
   #         echo "Terraform Apply Failed"
   #         exit 1
 
-     
   # activity-debug:
   #   name: "🐞 Debug Context"
   #   runs-on: ubuntu-latest
@@ -331,7 +307,7 @@ jobs:
   #       env:
   #         STRATEGY_CONTEXT: ${{ toJson(strategy) }}
   #       run: echo "$STRATEGY_CONTEXT"
-        
+
   #     - name: Dump matrix context
   #       env:
   #         MATRIX_CONTEXT: ${{ toJson(matrix) }}
@@ -344,8 +320,6 @@ jobs:
   #         echo "The run id is: $GITHUB_RUN_ID"
   #         echo "The GitHub Actor's username is: $GITHUB_ACTOR"
   #         echo "GitHub SHA: $GITHUB_SHA"
-
-
 
   # activity-tfsec:
   #   name: Scan Request
@@ -362,11 +336,10 @@ jobs:
   #     - name: tfsec
   #       uses: aquasecurity/tfsec-sarif-action@v0.1.0
   #       with:
-  #         sarif_file: tfsec.sarif          
+  #         sarif_file: tfsec.sarif
 
   #     - name: Upload SARIF file
   #       uses: github/codeql-action/upload-sarif@v2
   #       with:
   #         # Path to SARIF file relative to the root of the repository
-  #         sarif_file: tfsec.sarif  
-
+  #         sarif_file: tfsec.sarif

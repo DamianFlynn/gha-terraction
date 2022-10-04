@@ -24,7 +24,6 @@ on:
         description: "The Azure Storage Account to use for the Terraform Plan"
 
 jobs:
-  
   terraform-planning:
     runs-on: ubuntu-latest
     name: "Process Main Terraform Definition"
@@ -245,7 +244,6 @@ jobs:
         run: |
           cp -v src/.terraform.lock.hcl plans/terraform.lock.hcl
       #        cp -Rv src/.terraform plans/
-
       - name: Upload Plan and SHA artifacts
         if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' )
         uses: damianflynn/gha-azblob-upload-artifact@master
