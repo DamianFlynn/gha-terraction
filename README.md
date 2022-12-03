@@ -6,7 +6,7 @@ This Action requires Terraform to have permission to work on the target environm
 
 Therefore it will INHERIT the secrets from the hosting repository, to complete this action.
 
-The following secrets are must be available in the repository which uses this action:
+The following secrets must be available in the repository which uses this action:
 
 * AZURE_AD_TENANT_ID
   * The Tenant ID in which the Subscription exists.
