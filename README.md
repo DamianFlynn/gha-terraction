@@ -1,22 +1,46 @@
-# ghw-terrapipe
+# Terraform Action
 
-## Repo Secrets 
-This Action requires terraform to have permission to work on the target environment.
+## Secrets
+
+This Action requires Terraform to have permission to work on the target environment.
+
 Therefore it will INHERIT the secrets from the hosting repository, to complete this action.
 
-The following secrets are therefore required on the repository which uses this action
+The following secrets are must be available in the repository which uses this action:
 
-| Github Secret                       | Description    | Sample |
-| ---------------------- | --- |---|
-| AZURE_AD_CLIENT_ID     | ObjectId of the Service Principal    ||
-| AZURE_AD_CLIENT_SECRET | Secret from the Service Principal    ||
-| AZURE_SUBSCRIPTION_ID  | Any subscription the Service has access to, used to ensure correct context, as the principal may have access to multiple tenancy, or used in lighthouse    ||
-| AZURE_AD_TENANT_ID     | Tenant ID the Service Principal was created in    ||
-| ACF_REF_AZ_MODULE_ARTIFACT_STORAGE_CONNECTION | Connection string to blob storage account |BlobEndpoint=https://name.blob.core.windows.net/;QueueEndpoint=https://name.queue.core.windows.net/;FileEndpoint=https://name.file.core.windows.net/;TableEndpoint=https://name.table.core.windows.net/;SharedAccessSignature=sv=2021-21-21&ss=b&srt=sco&sp=rwdlacitfx&se=2025-25-25T01:01:01Z&st=2022-07-07T01:01:01Z&spr=https&sig=QbrdrRr99e7Y6kfcgK8V5iJQSSdiN5NspASAqDcHe0l%3D|
+* AZURE_AD_TENANT_ID
+  * The Tenant ID in which the Subscription exists.
+* AZURE_AD_CLIENT_ID
+  * The Client ID of the Service Principal used by Terraform.
+  * Must have permission to write to the Terraform state storage account.
+* AZURE_AD_CLIENT_SECRET
+  * The Client Secret of the Service Principal.
+* AZURE_SUBSCRIPTION_ID
+  * The Subscription ID in which the Terraform state storage account exists.
+* INFRACOST_API_KEY
+  * The Infracost API key for calculating cost impact of the Terraform plan.
+  * You can get a free API key or retrieve your existing one from <https://dashboard.infracost.io/> under **Org Settings**.
+* TERRAFORM_PLAN_STORAGE_CONNECTION
+  * A connection string to a storage account to use for the Terraform Plan.
+  * It is used to upload and download Terraform plan.
+  * To generate it, open the storage account and go to **Shared access signature**. Allow minimum:
+    * Allowed services: Blob
+    * Allowed resource types: Object
+    * Allowed permissions: Read, Write, Create
+  * Sample connection string: `BlobEndpoint=https://piacstatedatawewuwjwuwu.blob.core.windows.net/;QueueEndpoint=https://piacstatedatawewuwjwuwu.queue.core.windows.net/;FileEndpoint=https://piacstatedatawewuwjwuwu.file.core.windows.net/;TableEndpoint=https://piacstatedatawewuwjwuwu.table.core.windows.net/;SharedAccessSignature=sv=2021-21-21&ss=b&srt=o&sp=rwc&se=2025-25-25T01:01:01Z&st=2022-07-07T01:01:01Z&spr=https&sig=fbrddRr99ew6kfcgK855fJQSSdiN5Nsp23SAqDcHe0l%3D`
 
 ## Input Variables
 
-The Action has the following inputs
-| Input Variables                       | Description   |Required | Sample |
-| ---------------------- | --- |---|
-| repo-token     | The Action requires access to the calling repo, pass it your github_token   | Yes | `repo-token: ${{ github.token }}` |
+The Action has the following inputs:
+
+* repo-token
+  * The Action requires access to the calling repo. Pass it your github_token.
+  * Example: `repo-token: ${{ github.token }}`
+
+## Action Triggers
+
+This action is designed to trigger on either a pull request or an issue comment.
+
+## Issue comment
+
+When this action is triggered by an issue comment
