@@ -1,5 +1,7 @@
 # Terraform Action
 
+[Sample call workflow for this action](./.github/workflows/bootstrap.sample-call.yml)
+
 ## Secrets
 
 The following secrets must be set for this action:
