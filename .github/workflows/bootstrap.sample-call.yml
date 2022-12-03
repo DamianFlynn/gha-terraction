@@ -1,0 +1,24 @@
+---
+name: ⚙️ Terraform
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.tf"
+  issue_comment:
+    types: [created]
+
+jobs:
+  terraform:
+    name: Terraform Actions
+    uses: DamianFlynn/gha-terraction/.github/workflows/bootstrap.yml@main
+    secrets:
+      AZURE_AD_TENANT_ID: ${{ secrets.TENANT01_TENANT_ID }}
+      AZURE_AD_CLIENT_ID: ${{ secrets.TENANT01_TF_CLIENT_ID }}
+      AZURE_AD_CLIENT_SECRET: ${{ secrets.TENANT01_TF_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.TENANT01_TF_SUBSCRIPTION_ID }}
+      INFRACOST_API_KEY: ${{ secrets.TENANT01_INFRACOST_API_KEY }}
+      TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TENANT01_TF_STORAGE_CONNECTIONSTRING }}
+    with:
+      repo-token: ${{ github.token }}
