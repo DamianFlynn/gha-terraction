@@ -8,11 +8,11 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before opening a question, please search for the behaviour in the existing issues.
+        Before opening a question, please search for the behavior in the existing issues.
 
         ---
 
-        Thank you for taking the time to file a query. To address process this as fast as possible, we need some information.
+        Thank you for taking the time to file a query. To process this as fast as possible, we need some information.
         ---
   - type: textarea
     id: question-description
