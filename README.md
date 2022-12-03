@@ -40,7 +40,3 @@ The Action has the following inputs:
 ## Action Triggers
 
 This action is designed to trigger on either a pull request or an issue comment.
-
-## Issue comment
-
-When this action is triggered by an issue comment
