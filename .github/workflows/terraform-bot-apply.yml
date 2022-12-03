@@ -9,17 +9,21 @@ on:
         type: string
         description: "The GitHub token to use for the run"
     secrets:
-      AZURE_AD_CLIENT_ID:
-        required: true
-      AZURE_AD_CLIENT_SECRET:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
       AZURE_AD_TENANT_ID:
         required: true
+        description: "The Tenant ID in which the Subscription exists."
+      AZURE_AD_CLIENT_ID:
+        required: true
+        description: "The Client ID of the Service Principal used by Terraform."
+      AZURE_AD_CLIENT_SECRET:
+        required: true
+        description: "The Client Secret of the Service Principal."
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+        description: "The Subscription ID in which the Terraform state storage account exists."
       TERRAFORM_PLAN_STORAGE_CONNECTION:
         required: true
-        description: "The Azure Storage Account to use for the Terraform Plan"
+        description: "A connection string to a storage account to use for the Terraform Plan."
 
 jobs:
   terraform-application:
@@ -34,7 +38,7 @@ jobs:
 
     steps:
       # Has this workflow already commented on the PR?
-      - name: Find Intial Comment
+      - name: Find Initial Comment
         uses: peter-evans/find-comment@v2
         continue-on-error: true
         id: initial-comment
@@ -101,7 +105,7 @@ jobs:
         run: |
           cp plans/terraform.lock.hcl src/.terraform.lock.hcl
 
-      - name: Update comment with Preping
+      - name: Update comment with Prepping
         if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success'
         uses: peter-evans/create-or-update-comment@v1
         with:

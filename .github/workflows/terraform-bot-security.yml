@@ -9,20 +9,24 @@ on:
         type: string
         description: "The GitHub token to use for the run"
     secrets:
-      AZURE_AD_CLIENT_ID:
-        required: true
-      AZURE_AD_CLIENT_SECRET:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
       AZURE_AD_TENANT_ID:
         required: true
+        description: "The Tenant ID in which the Subscription exists."
+      AZURE_AD_CLIENT_ID:
+        required: true
+        description: "The Client ID of the Service Principal used by Terraform."
+      AZURE_AD_CLIENT_SECRET:
+        required: true
+        description: "The Client Secret of the Service Principal."
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+        description: "The Subscription ID in which the Terraform state storage account exists."
       TERRAFORM_PLAN_STORAGE_CONNECTION:
         required: true
-        description: "The Azure Storage Account to use for the Terraform Plan"
+        description: "A connection string to a storage account to use for the Terraform Plan."
 
 jobs:
-  
+
   terraform-scan:
     runs-on: ubuntu-latest
     name: "Security Scan Main Terraform Plan"
@@ -39,10 +43,10 @@ jobs:
       - name: tfsec
         uses: aquasecurity/tfsec-sarif-action@v0.1.0
         with:
-          sarif_file: tfsec.sarif          
+          sarif_file: tfsec.sarif
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
           # Path to SARIF file relative to the root of the repository
-          sarif_file: tfsec.sarif  
+          sarif_file: tfsec.sarif

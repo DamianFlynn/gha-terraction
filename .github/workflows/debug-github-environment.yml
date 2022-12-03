@@ -7,21 +7,26 @@ on:
       repo-token:
         required: true
         type: string
-        description: "The GitHub token to use for the run"
+        description: "The GitHub token to use for the run."
     secrets:
-      AZURE_AD_CLIENT_ID:
-        required: true
-      AZURE_AD_CLIENT_SECRET:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
       AZURE_AD_TENANT_ID:
         required: true
+        description: "The Tenant ID in which the Subscription exists."
+      AZURE_AD_CLIENT_ID:
+        required: true
+        description: "The Client ID of the Service Principal used by Terraform."
+      AZURE_AD_CLIENT_SECRET:
+        required: true
+        description: "The Client Secret of the Service Principal."
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+        description: "The Subscription ID in which the Terraform state storage account exists."
       INFRACOST_API_KEY:
         required: true
+        description: "The Infracost API key for calculating cost impact of the Terraform plan."
       TERRAFORM_PLAN_STORAGE_CONNECTION:
         required: true
-        description: "The Azure Storage Account to use for the Terraform Plan"
+        description: "A connection string to a storage account to use for the Terraform Plan."
 
 jobs:
   activity-debug:
@@ -72,8 +77,8 @@ jobs:
 
       - name: Show default environment variables
         run: |
-          echo "The job_id is: $GITHUB_JOB"   # reference the default environment variables
-          echo "The id of this action is: $GITHUB_ACTION"   # reference the default environment variables
+          echo "The job_id is: $GITHUB_JOB"
+          echo "The id of this action is: $GITHUB_ACTION"
           echo "The run id is: $GITHUB_RUN_ID"
           echo "The GitHub Actor's username is: $GITHUB_ACTOR"
           echo "GitHub SHA: $GITHUB_SHA"
