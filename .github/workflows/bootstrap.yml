@@ -40,7 +40,7 @@ jobs:
       TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
     with:
-      repo-token: ${{ github.token }}
+      repo-token: ${{ inputs.repo-token }}
 
   # Listens to the events fired by GitHub associated with 'pull_request'
   plan-terraform:
@@ -55,4 +55,4 @@ jobs:
       TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
     with:
-      repo-token: ${{ github.token }}
+      repo-token: ${{ inputs.repo-token }}

@@ -35,10 +35,10 @@ jobs:
     name: "Process Main Terraform Definition"
     env:
       GITHUB_TOKEN: ${{ inputs.repo-token }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
 
     steps:
@@ -47,7 +47,7 @@ jobs:
         uses: peter-evans/find-comment@v2
         id: initial-comment
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ inputs.repo-token }}
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: Configuration Planning
@@ -66,7 +66,7 @@ jobs:
         uses: peter-evans/find-comment@v2
         id: fc
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ inputs.repo-token }}
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: Configuration Planning
@@ -131,7 +131,7 @@ jobs:
           body: |
 
             - Initializing deployment tool chain.
-            - Plan Id: ${{github.event.pull_request.head.sha}}
+            - Plan Id: ${{ github.event.pull_request.head.sha }}
 
           edit-mode: append
           reactions: rocket
@@ -178,7 +178,7 @@ jobs:
           body: |
             # Configuration Planning
 
-            Plan Id: ${{github.event.pull_request.head.sha}}
+            Plan Id: ${{ github.event.pull_request.head.sha }}
 
             ## Terraform Init Failed
 
@@ -221,7 +221,7 @@ jobs:
       - name: Store the Current Plan SHA
         if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' )
         run: |
-          expr ${{github.event.pull_request.head.sha}} | tee ${{ github.workspace }}/plans/tfplan.SHA
+          expr ${{ github.event.pull_request.head.sha }} | tee ${{ github.workspace }}/plans/tfplan.SHA
 
       # - name: Setup upterm session
       #   uses: lhotari/action-upterm@v1
@@ -271,7 +271,7 @@ jobs:
           body: |
             # Configuration Planning
 
-            Plan Id: ${{github.event.pull_request.head.sha}}
+            Plan Id: ${{ github.event.pull_request.head.sha }}
             Storage: `definition-plan_${{ github.event.repository.name }}_PR${{ github.event.pull_request.number }}`
 
             ## Terraform Plan
@@ -297,7 +297,7 @@ jobs:
           body: |
             # Configuration Planning
 
-            Plan Id: ${{github.event.pull_request.head.sha}}
+            Plan Id: ${{ github.event.pull_request.head.sha }}
 
             ## Terraform Plan Failed
 
@@ -327,7 +327,7 @@ jobs:
       - name: Setup Infracost
         uses: infracost/actions/setup@v2
         with:
-          api-key: ${{ secrets.ACF_INFRACOST_API_KEY }}
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
 
       # Generate Infracost JSON file as the baseline.
       - name: Generate Infracost cost estimate baseline
@@ -358,8 +358,8 @@ jobs:
         run: |
           infracost comment github --path=${{ github.workspace }}/plans/infracost.json \
                 --repo=$GITHUB_REPOSITORY \
-                --github-token=${{github.token}} \
-                --pull-request=${{github.event.pull_request.number}} \
+                --github-token=${{ github.token }} \
+                --pull-request=${{ github.event.pull_request.number }} \
                 --behavior=update
 
       ##

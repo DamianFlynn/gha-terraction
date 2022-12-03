@@ -38,10 +38,10 @@ jobs:
       AZURE_AD_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID}}
       AZURE_AD_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+      TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
     with:
-      repo-token: ${{ github.token }}
+      repo-token: ${{ inputs.repo-token }}
 
   bot-terraform-apply:
     name: "🏗️ Deploy Request"
@@ -54,7 +54,7 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
     with:
-      repo-token: ${{ github.token }}
+      repo-token: ${{ inputs.repo-token }}
 
   bot-terraform-scan:
     name: "👮 Security Review Request"
@@ -67,4 +67,4 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       TERRAFORM_PLAN_STORAGE_CONNECTION: ${{ secrets.TERRAFORM_PLAN_STORAGE_CONNECTION }}
     with:
-      repo-token: ${{ github.token }}
+      repo-token: ${{ inputs.repo-token }}
