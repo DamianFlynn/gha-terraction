@@ -121,7 +121,7 @@ jobs:
         if: steps.changes-since-plan.outputs.definition == ''
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.2.3
+          terraform_version: 1.3.0
 
       - name: Update comment with Preping
         if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
