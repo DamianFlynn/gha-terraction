@@ -15,7 +15,7 @@
 - name: area/definitions
   color: "72ccf3"
   description: >-
-    Changes made in the main or example definations
+    Changes made in the main or example definitions
 - name: area/documentation
   color: "72ccf3"
   description: >-
@@ -86,7 +86,7 @@
   color: "cc317c"
 - name: enhancement
   color: "84b6eb"
-# Uncategorized
+# Not Categorized
 - name: do-not-merge
   color: "ee0701"
 - name: docs
