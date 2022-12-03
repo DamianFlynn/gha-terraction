@@ -82,7 +82,7 @@ jobs:
         run: |
           lastPlanSHA=$(cat ${{ github.workspace }}/plans/tfplan.SHA )
           echo "Found: $lastPlanSHA"
-          echo "::set-output name=lastPlanSHA::$lastPlanSHA"
+          echo "lastPlanSHA=$lastPlanSHA" >> $GITHUB_OUTPUT
 
       # Grab the Current Terraform Binaries
       - name: Setup Terraform
@@ -147,7 +147,7 @@ jobs:
           body="${body//'%'/'%25'}"
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
-          echo "::set-output name=body::$body"
+          echo "body=$body" >> $GITHUB_OUTPUT
 
       - name: Update comment with Init Failure
         if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
