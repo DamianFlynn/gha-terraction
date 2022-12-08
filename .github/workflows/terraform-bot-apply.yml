@@ -157,7 +157,7 @@ jobs:
           body: |
             # Configuration Planning
 
-            Commit Id: ${{github.event.pull_request.head.sha}}
+            Commit Id: ${{ github.event.pull_request.head.sha }}
 
             ## Terraform Init Failed
 
