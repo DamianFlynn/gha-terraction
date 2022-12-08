@@ -35,10 +35,10 @@ jobs:
     name: "Process Main Terraform Definition"
     env:
       GITHUB_TOKEN: ${{ inputs.repo-token }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
 
     steps:
@@ -47,7 +47,7 @@ jobs:
         uses: peter-evans/find-comment@v2
         id: initial-comment
         with:
-          token: ${{ inputs.repo-token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: Configuration Planning
@@ -66,7 +66,7 @@ jobs:
         uses: peter-evans/find-comment@v2
         id: fc
         with:
-          token: ${{ inputs.repo-token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: Configuration Planning
