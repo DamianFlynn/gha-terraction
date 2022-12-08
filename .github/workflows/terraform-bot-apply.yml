@@ -43,7 +43,7 @@ jobs:
         continue-on-error: true
         id: initial-comment
         with:
-          token: ${{ inputs.repo-token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
           comment-author: "github-actions[bot]"
           body-includes: Applying Plan
@@ -62,7 +62,7 @@ jobs:
         uses: peter-evans/find-comment@v2
         id: fc
         with:
-          token: ${{ inputs.repo-token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
           comment-author: "github-actions[bot]"
           body-includes: Applying Plan
@@ -157,7 +157,7 @@ jobs:
           body: |
             # Configuration Planning
 
-            Commit Id: ${{ github.event.pull_request.head.sha }}
+            Commit Id: ${{github.event.pull_request.head.sha}}
 
             ## Terraform Init Failed
 
