@@ -146,7 +146,7 @@ jobs:
         id: init
         continue-on-error: true
         run: |
-          mkdir plans
+          mkdir -p plans
           cd src
           terraform init -input=false
         # terraform init -reconfigure
