@@ -118,13 +118,13 @@ jobs:
       # OR IF no Changed File
       # Grab the Current Terraform Binaries
       - name: Setup Terraform
-        if: steps.changes-since-plan.outputs.definition == ''
+        if: steps.get-plan-sha.outcome != 'success' || (steps.get-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '')
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.3.0
 
       - name: Update comment with Prepping
-        if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition != '' )
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
@@ -142,7 +142,7 @@ jobs:
       # Initialize requirements for Terraform
       # https://www.terraform.io/cli/config/environment-variables#tf_cli_args-and-tf_cli_args_name
       - name: Initialize Terraform
-        if: steps.changes-since-plan.outputs.definition == ''
+        if: steps.changes-since-plan.outputs.definition != ''
         id: init
         continue-on-error: true
         run: |
