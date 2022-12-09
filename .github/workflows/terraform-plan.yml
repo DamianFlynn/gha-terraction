@@ -113,10 +113,7 @@ jobs:
           echo "TF - ${{ steps.changes-since-plan.outputs.tf }}"
           echo "Definition - ${{ steps.changes-since-plan.outputs.definition }}"
 
-      # Logic needs to trigger
-      # IF no plan
-      # OR IF no Changed File
-      # Grab the Current Terraform Binaries
+
       - name: Setup Terraform
         if: steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '')
         uses: hashicorp/setup-terraform@v2
@@ -124,7 +121,7 @@ jobs:
           terraform_version: 1.3.0
 
       - name: Update comment with Prepping
-        if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.fc.outputs.comment-id != ''  && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
@@ -142,7 +139,7 @@ jobs:
       # Initialize requirements for Terraform
       # https://www.terraform.io/cli/config/environment-variables#tf_cli_args-and-tf_cli_args_name
       - name: Initialize Terraform
-        if: steps.changes-since-plan.outputs.definition == ''
+        if: steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '')
         id: init
         continue-on-error: true
         run: |
@@ -155,13 +152,13 @@ jobs:
 
       # Sed is removing all the ANSI Color code messages from the error.
       - name: Reformat Failed Init
-        if: steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         run: |
           echo '${{ steps.init.outputs.stderr }}' \
           | sed -E 's/\x1b\[[0-9;]*m//g' > init.txt
 
       - name: Output formatted init error
-        if: steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         id: get-init-body
         run: |
           body="$(cat init.txt)"
@@ -171,7 +168,7 @@ jobs:
           echo "::set-output name=body::$body"
 
       - name: Update comment with Init Failure
-        if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.fc.outputs.comment-id != '' && steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
@@ -194,7 +191,7 @@ jobs:
           edit-mode: replace
 
       - name: Fail workflow due to init
-        if: steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.init.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         run: |
           echo "Terraform Init Failed"
           exit 1
@@ -207,7 +204,7 @@ jobs:
       # and update the PR with the findings
       - name: Plan Terraform
         id: plan
-        if: steps.init.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.init.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         continue-on-error: true
         run: |
           cd src
@@ -219,7 +216,7 @@ jobs:
             -no-color ${{ github.workspace }}/plans/tfplan
 
       - name: Store the Current Plan SHA
-        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         run: |
           expr ${{ github.event.pull_request.head.sha }} | tee ${{ github.workspace }}/plans/tfplan.SHA
 
@@ -230,12 +227,12 @@ jobs:
       #     limit-access-to-actor: false
 
       - name: Store the Current Terraform Lockfile
-        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         run: |
           cp -v src/.terraform.lock.hcl plans/terraform.lock.hcl
       #        cp -Rv src/.terraform plans/
       - name: Upload Plan and SHA artifacts
-        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         uses: damianflynn/gha-azblob-upload-artifact@master
         id: put-plan-sha
         with:
@@ -248,14 +245,14 @@ jobs:
       # It stores the amount of spaces in `\1` and the +/- in `\2`.
       # Then replace that portion of the line with `\2\1` (+/- followed by the number of matched spaces).
       - name: Reformat Plan
-        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         run: |
           echo '${{ steps.plan.outputs.stdout || steps.plan.outputs.stderr }}' \
           | sed -E 's/^([[:space:]]+)([-+])/\2\1/g' > plan.txt
 
       - name: Output formatted plan
         id: get-comment-body
-        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         run: |
           body="$(cat plan.txt)"
           body="${body//'%'/'%25'}"
@@ -264,7 +261,7 @@ jobs:
           echo "::set-output name=body::$body"
 
       - name: Update comment with Plan
-        if: steps.fc.outputs.comment-id != '' &&  steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.fc.outputs.comment-id != '' &&  steps.plan.outcome == 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
@@ -290,7 +287,7 @@ jobs:
           edit-mode: replace
 
       - name: Update comment with Failed Plan
-        if: steps.fc.outputs.comment-id != '' &&  steps.plan.outcome == 'failure' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.fc.outputs.comment-id != '' &&  steps.plan.outcome == 'failure' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
@@ -308,7 +305,7 @@ jobs:
           edit-mode: replace
 
       - name: Fail workflow due to plan
-        if: steps.plan.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' )
+        if: steps.plan.outcome != 'success' && ( steps.changes-since-plan.outputs.definition == '' || (steps.store-plan-sha.outcome == 'success' && steps.changes-since-plan.outputs.definition != '') )
         run: |
           echo "Terraform Plan Failed"
           exit 1
