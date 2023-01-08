@@ -314,7 +314,7 @@ jobs:
       ## STAGE 3 - Infrastructure Costs?
       ##
 
-      # Checkout the base branch of the pull request (e.g. main/master).
+      # Checkout the base branch of the pull request (e.g. main).
       - name: Checkout base branch
         uses: actions/checkout@v2
         with:
@@ -329,17 +329,27 @@ jobs:
       # Generate Infracost JSON file as the baseline.
       - name: Generate Infracost cost estimate baseline
         run: |
-          infracost breakdown --path=main \
-                              --format=json \
-                              --out-file=${{ github.workspace }}/plans/infracost-base.json
+          if [[ -n $(find ${{ github.workspace }}/main -name "*.tf" -maxdepth 1 -type f) ]]; then
+            infracost breakdown --path=main \
+                                --format=json \
+                                --out-file=${{ github.workspace }}/plans/infracost-base.json
+          else
+            infracost breakdown --path=src \
+                                --format=json \
+                                --out-file=${{ github.workspace }}/plans/infracost.json
+          fi
 
       # Generate an Infracost diff and save it to a JSON file.
       - name: Generate Infracost diff
         run: |
-          infracost diff --path=src \
-                          --format=json \
-                          --compare-to=${{ github.workspace }}/plans/infracost-base.json \
-                          --out-file=${{ github.workspace }}/plans/infracost.json
+          if [[ -n $(find ${{ github.workspace }}/main -name "*.tf" -maxdepth 1 -type f) ]]; then
+            infracost diff --path=src \
+                           --format=json \
+                           --compare-to=${{ github.workspace }}/plans/infracost-base.json \
+                           --out-file=${{ github.workspace }}/plans/infracost.json
+          else
+            echo "Unable to create infracost diff. There are no terraform files in main branch"
+          fi
 
       # Posts a comment to the PR using the 'update' behavior.
       # This creates a single comment and updates it. The "quietest" option.
